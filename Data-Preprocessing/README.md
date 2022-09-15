@@ -93,3 +93,7 @@ The customized list of stop-words can be found in 'stopwords.txt' file; The cate
 
 ### ---------------------------------------------
 ### How to Use the data_preprocessing.py  
+
+- The script is written to read data from our database using the ChannelData class. 
+- Creating DataCleaning object and calling lemma_stem() stores clean corpus in the user-defined table. 
+ 

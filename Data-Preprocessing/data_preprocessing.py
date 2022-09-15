@@ -67,12 +67,15 @@ class ChannellData:
 ''' ---------------------------------------------------------------------- '''
 ''' ---------------------------  Data Cleaning  -------------------------- '''
 ''' 
-    
+    DataCleaning class is defined to get the produced text corpus from 
+    the ChannelData class and store the cleaned corpus in out_put table, 
+    which in this work is stored in a new database.  
 
+    DataCleaning class takes 2-args of:
+        - orig_corpus: Original Corpus in form of DataFrame, 
+        - output_table: Name of output table
 
- '''
-
-
+    Calling lemma_stem() saves cleaned corpus in defined output table '''
 
 class DataCleaning:
     
