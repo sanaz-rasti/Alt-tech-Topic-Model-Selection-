@@ -8,13 +8,19 @@ The original text corpus of our project is preprocessed using the script data_pr
 ### Reading Data
 The script includes **ChannelData** class for reading the corpus from our database. 
 
-The following steps shows the input and output of this channel:
-   - ChannelData class takes 3-args of:
-      - datapath: string, pointing at '.db' file location 
-      - target_table: string,
-      - channel_Unique_id: string, specific channel ID
-   - Calling corpus() method returns:
-      - the original message content
+
+There are two separate Tables for each channel of data in our dataset, 
+  - These tables are read and appended in one as the orig text corpus. 
+  - The object take list of target channel IDs. 
+
+ChannelData class takes 4-args of:
+  - datapath: string, pointing at '.db' file location 
+  - list_6irish_channels,
+  - target_table_1: str('Target Table_1'),
+  - target_table_2: str('Target Table_2')):
+
+Calling corpus() method returns:
+  - TextCorpus = the original message content '''
 
 
 ### ---------------------------------------------

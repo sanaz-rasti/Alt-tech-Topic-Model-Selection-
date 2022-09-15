@@ -24,7 +24,7 @@ nltk.download('stopwords')
     These tables are read and appended in one as the orig text corpus. 
     The object take list of target channel IDs. 
 
-    ChannelData class takes 3-args of:
+    ChannelData class takes 4-args of:
         - datapath: string, pointing at '.db' file location 
         - list_6irish_channels,
         - target_table_1: str('Target Table_1'),
