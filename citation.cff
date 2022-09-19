@@ -1,0 +1,24 @@
+cff-version: 0.0.0
+message: If you use this software, please cite it using these metadata.
+title: Alt-tech Topic Model Selection
+
+abstract: The software main contribution is creating a novel approach for topic model selection based on documnet topic similarity.
+The Software is looking at different models produced based on various Ngram-ranges; however, the proposed model selection scheme 
+can be applied to any set of topic models. 
+
+authors:
+  - family-names: Rasti 
+    given-names: Sanaz
+    orcid: "https://orcid.org/0000-0001-5488-6116"
+  - name: "Alt-tech Topic Model Selection"
+version: 
+date-released: "2022-09"
+identifiers:
+  - description: This is the collection of archived snapshots 
+    type: doi
+    value: ""
+  - description: This is the archived snapshot 
+    type: doi
+    value: ""
+license: 
+repository-code: "https://github.com/sanaz-rasti/Alt-tech-Topic-Model-Selection-"

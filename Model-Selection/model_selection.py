@@ -1,3 +1,32 @@
+'''--------------------------- Dependencies ---------------------------'''
+from IPython.core.display import display, HTML
+import warnings
+import pandas as pd
+import numpy as np
+import logging as ping
+from sqlalchemy import create_engine
+from IPython.display import display
+
+from typing import TypeVar, Generic, Tuple
+import statistics
+import matplotlib.pyplot as plt
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import NMF
+from gensim.similarities import Similarity
+from gensim.test.utils import get_tmpfile
+import gensim.corpora as corpora
+
+from nltk.text import Text
+import nltk
+from nltk.corpus import stopwords
+nltk.download('punkt')
+nltk.download('stopwords')
+
+
+display(HTML("<style>.container { width:100% !important; }</style>"))
+pd.options.display.max_colwidth = 200
+warnings.filterwarnings('ignore')
+
 ''' --------------------------- Doc Topic Similarity Class --------------------------- '''
 '''
 DESCRIPTION: 
@@ -38,11 +67,10 @@ OUTPUT:
                                                                             
         
 EXAMPLE:
-    Employing the ChannelData class, strip_text and orig_msg_content will be achieved 
-    chd = ChannellData(datapath=PATH-TO-DATABASE, 
-                   target_table=TARGETED-TABLE, 
-                   channelUniqueId=CHANNEL-ID)
-    strip_text, orig_msg_content = chd.corpus()
+    Read strip_text and orig_msg_content from your dataset
+
+    strip_text = 
+    orig_msg_content = 
     
     Create object of DocTopicSim with ngram_range=5,ntopics=10, ndocs=3
     dts = DocTopicSim(orig_msg_content= orig_msg_content, 
@@ -52,11 +80,13 @@ EXAMPLE:
                   ntopics = 10, 
                   nterms = 10,
                   ndocs = 3)
+
     dts.tfidf_doc_topic_sim()
+
     dts.plot_similarity_for_models()
+    
 '''
 ''' ---------------------------  Doc Topic Similarity --------------------------- '''
-
 
 class DocTopicSim:
 
@@ -66,13 +96,13 @@ class DocTopicSim:
     df = pd.DataFrame()
 
     def __init__(self,
-                 orig_msg_content: 'Should take the original meseg content from the database',
-                 strip_text: 'stripid text data from database',
+                 orig_msg_content: str('Should take the original meseg content from the database'),
+                 strip_text: str('stripid text data from database'),
                  ngram_range,
-                 StopWords_txtfile: 'The stopwords text file',
-                 ntopics: 'Number of desired topics to be extracted',
-                 nterms: 'Number of terms per topic',
-                 ndocs: 'Number of documents to be extracted') -> None:
+                 StopWords_txtfile: str('The stopwords text file'),
+                 ntopics: str('Number of desired topics to be extracted'),
+                 nterms: str('Number of terms per topic'),
+                 ndocs: str('Number of documents to be extracted')) -> None:
 
         self.orig_msg_content = orig_msg_content
         self.strip_text = strip_text
@@ -208,3 +238,22 @@ class DocTopicSim:
 '''--------------------------------------------------------------------------------------'''
 '''--------------------------------------------------------------------------------------'''
 '''--------------------------------------------------------------------------------------'''
+
+def main():
+
+    dts = DocTopicSim(orig_msg_content='orig_msg_content',
+                      strip_text = 'strip_text',
+                      ngram_range = 5,
+                      StopWords_txtfile = 'stopwords.txt',
+                      ntopics = 10,
+                      nterms = 10,
+                      ndocs = 3)
+    
+    dts.tfidf_doc_topic_sim()
+
+    dts.plot_similarity_for_models()
+
+
+''' ------------------------------------------------------------------------'''
+if __name__ == "__main__":
+    main()
