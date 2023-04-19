@@ -65,19 +65,17 @@ warnings.filterwarnings('ignore')
 ''' --------------------------- Doc Topic Similarity Class --------------------------- '''
 '''
 DESCRIPTION: 
-    DocTopicSim class is created to perform ... major topic modeling experiments as follows:
-        - Models TF-IDF topic modeling for a different range of n-grams 
-        - Detects N-Top-Related-Documents for each extracted topic
-        - Calculates similarity between each pair of "N-Top-Rselated-Document" and "Corresponding-Topic"
-        - Returns a descriptive DataFrame of corpus include columns = ['Model',
-                                                                     'Num_Topics', 
-                                                                     'Extracted_Topics',
-                                                                     'Relevant_Docs',
-                                                                     'Strip_text_of_doc',
-                                                                     'Doc_Topic_Similarity'] 
-        - Plot the average Ndoc-topic similarity for each experimented model. 
+    DocTopicSim class includes 3-major methods with following specs: 
+        - lda_doc_topic_sim: produces models with different Ngram-ranges and choose best performing model using Document-Topic-Similarity
+        - nmf_doc_topic_sim: produces models with different Ngram-ranges and choose best performing model using Document-Topic-Similarity
+        - ntm_doc_topic_sim: produces two neural topic model, employing Contextualized Topic Modeling.
         
-    
+        Each method returns a descriptive DataFrame of topic models
+        The class also includes 2-minor methods:
+        - save_Top_Doc: For each topic model, saves Topics and Documents for further investigation
+        - plot_DTS_RS: This method should be called only if the dataset is labelled. 
+            After producing all three topic models, the DTS-RS of all models are plotted  
+
 INPUT:
     The input for the class requires:
                     - orig_msg_content
@@ -87,39 +85,37 @@ INPUT:
                     - Number of topics: ntopics
                     - Number of terms per topic: nterms
                     - Number of relevant documnets to be assigned from each extracted topic: ndocs
-OUTPUT:
-        - Calling tfidf_doc_topic_sim() function on DocTopicSim-class-object will store a DataFrame in 
-            class.df variable which includes the following content in columns: ['Model',
-                                                                                'Num_Topics',
-                                                                                'Extracted_Topics',
-                                                                                'Relevant_Docs',
-                                                                                'Strip_text_of_doc',
-                                                                                'Doc_Topic_Similarity']
-                                                                                
-        - Calling plot_similarity_for_models() function on DocTopicSim-class-object which is trained using 
-            tfidf_doc_topic_sim() will plot the average similarity which is achieved for each trained model. 
-                                                                            
+                                                     
                                                                             
         
 EXAMPLE:
-    Read strip_text and orig_msg_content from your dataset
+    - Read origCorp and cleanedCorp from your dataset
+    - Produce the dts object 
 
-    strip_text = 
-    orig_msg_content = 
+    dts = DocTopicSim(chnlN = 'ChannelName',
+                      orig_msg_content = origCorp,
+                      strip_text = cleanedCorp,
+                      ngram_range = 5,
+                      targets = [],
+                      ntopics = 10,
+                      nterms = 10,
+                      ndocs = 5)
     
-    Create object of DocTopicSim with ngram_range=5,ntopics=10, ndocs=3
-    dts = DocTopicSim(orig_msg_content= orig_msg_content, 
-                  strip_text = strip_text, 
-                  ngram_range = 5, 
-                  StopWords_txtfile = 'stopwords.txt', 
-                  ntopics = 10, 
-                  nterms = 10,
-                  ndocs = 3)
+    dts.lda_doc_topic_sim()
+    df = dts.df_lda
+    df.to_csv('chName10topic_lda.csv', index=False)
 
-    dts.tfidf_doc_topic_sim()
+    dts.nmf_doc_topic_sim()
+    df = dts.df_nmf
+    df.to_csv('chName10topic_nmf.csv', index=False)
 
-    dts.plot_similarity_for_models()
-    
+    dts.ntm_doc_topic_sim()
+    df = dts.df_ntm
+    df.to_csv('chName10topic_ntm.csv', index=False)
+
+    if len(targets) > 0 :
+        dts.plot_DTS_RS()
+   
 '''
 ''' ---------------------------  Doc Topic Similarity --------------------------- '''
 class DocTopicSim:
