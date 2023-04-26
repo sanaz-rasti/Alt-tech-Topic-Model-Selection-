@@ -15,13 +15,13 @@ session = AsyncHTMLSession()
 
 ''' ---------- UTubeTrnscrpt ----------- '''
 '''
-UTubeTrnscrpt class takes the channel_name, 
-list of video  Ids, desired "start" and "end" points 
-from Youtube. 
+UTubeTrnscrpt class takes:
+    - channel_name 
+    - list of video  Ids 
+    - desired "start" and "end" points timestamps
+
 Calling the method "transcript" will return a dataframe 
 with video Meta including the transcripts. 
-
-
 '''
 class UTubeTrnscrpt:
     corp_documents = []
