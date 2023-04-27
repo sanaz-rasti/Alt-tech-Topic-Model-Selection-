@@ -1,16 +1,8 @@
 from youtube_transcript_api import YouTubeTranscriptApi
-import requests
-import json
 import pandas as pd
-import lxml
-from bs4 import BeautifulSoup
-import urllib
 import asyncio
-from lxml import etree
-import simplejson
-from requests_html import HTMLSession, AsyncHTMLSession
+from requests_html import AsyncHTMLSession
 from bs4 import BeautifulSoup as bs
-#session = HTMLSession()
 session = AsyncHTMLSession()
 
 ''' ---------- UTubeTrnscrpt ----------- '''
@@ -25,21 +17,26 @@ with video Meta including the transcripts.
 '''
 class UTubeTrnscrpt:
     corp_documents = []
+    
     def __init__(self, 
                 channel_name,
                 video_id_list, 
-                start, 
-                end):
+                start = None : 'Start time for transcripts in seconds', 
+                end   = None : 'end time for transcripts in seconds')
         self.channel_name  = channel_name
         self.video_id_list = video_id_list
-        self.start         = start
-        self.end           = end
+        self.start = start
+        self.end   = end   
+        
     
     async def transcript(self):
         data = []
+        
         for vid in self.video_id_list:
-            # Collecting the 
+        
+            # Collecting the transcript
             transcript = YouTubeTranscriptApi.get_transcript(vid)
+            
             if self.start == None and self.end == None:
                 corp = ''
                 for i in range(len(transcript)):
@@ -49,7 +46,7 @@ class UTubeTrnscrpt:
                 corp = ''
                 for i in range(len(transcript)):
                     stpoint = list(transcript[i].values())[1]
-                    if self.start <= stpoint & self.end >= stpoint:
+                    if self.start <= stpoint and self.end >= stpoint:
                         corp = corp + ' ' + list(transcript[i].values())[0]     
                     
             elif self.start != None and self.end == None:
@@ -73,10 +70,10 @@ class UTubeTrnscrpt:
             await r.html.arender(sleep = 10)
             html = r.html.raw_html
             soup = bs(html, "html.parser")
-            title        = soup.find("meta", itemprop="name")['content']
-            nviews       = soup.find("meta", itemprop="interactionCount")['content']
-            vdescription = soup.find("meta", itemprop="description")['content']
-            pubdate      = soup.find("meta", itemprop="datePublished")['content']
+            title        = soup.find("meta", itemprop = "name")['content']
+            nviews       = soup.find("meta", itemprop = "interactionCount")['content']
+            vdescription = soup.find("meta", itemprop = "description")['content']
+            pubdate      = soup.find("meta", itemprop = "datePublished")['content']
             duration     = soup.find("span", {"class": "ytp-time-duration"}).text
             tags         = ', '.join([ meta.attrs.get("content") for meta in soup.find_all("meta", {"property": "og:video:tag"}) ])
             await asession.close()
@@ -106,9 +103,11 @@ class UTubeTrnscrpt:
                                                                       'Documnet'])
         
         # save in a csv file 
-        filename = f'{self.channel_name}_YoutubeTranscripts.txt'
+        if self.end != None :
+            filename = f'{self.channel_name}_YoutubeTranscripts_(from{self.start}s_to_{self.end}s).txt'
+        else:
+            filename = f'{self.channel_name}_YoutubeTranscripts_fullvideo.txt'
         self.__class__.corp_documents.to_csv(filename, sep = ',', index = False, encoding = 'utf-8')
-        
         return self.__class__.corp_documents
 
 
@@ -118,8 +117,11 @@ async def main():
     await utobj.transcript()
 asyncio.run(main())
 
-''' ------------------------------------------------------'''
-''' 150 videos from Computing Forever Channel'''
+
+
+
+''' -------------------------APENDIX -----------------------------'''
+''' list of 150 video_Ids from Computing Forever Youtube Channel'''
 '''
     cfvidlist = ['x1_QEO-Xxj8','pKkWFCy2Lr0','jjvOtLdJYk0','eM3r-SW0eQs','FY7Okr0J5iE',
             '9ONa9JSMIs8','Bl9eaQyzC2Y','RqUTt7MF7HY','U-g5NxpVOVw','GLlVCQYl0eU',
