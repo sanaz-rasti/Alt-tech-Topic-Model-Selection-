@@ -1,34 +1,88 @@
-
 # Description
 This folder includes 'model_selection.py' script which encompasses two main functions:
 - The algorithm for producing different topic models 
 - Selecting the best performing model based on document topic similarity 
 
+The Pseudocode of proposed model selection algorithm is presented in Algorith 1:
+
+<figure>
+<center>
+  <img src="./imgs/1.png" alt="tmm" style="width:70%">
+  </center>
+</figure>
 
 ### ------------------------------------------------------------------------------------------
-## Topic Modeling Models
-The module employs TF-IDF text information retrieval method for extracting the topics. TF-IDF was evolved in early 1970s as the outcome of two major research by [[1]](#1) and [[2]](#2). In 1991 authors of [[3]](#3), employed TF-IDF as an automatic text indexing approach for text retrieval. Since then, the approach has been widespreadly used for topic modeling, document classification, stop-word filtering and sentiment analysis. 
-
-Topic modeling with TF-IDF approach includes 
-- (I) identifying individual word occurrences in documents of a collection,
-- (II) deleting the high-frequency function words using stop-words list,
-- (III) suffix stripping and stemming words,
-- (IV) assigning weight factor $w_{ik}$ for each term $T_{k}$ in document $D_{i}$ to indicate the term importance and
-- (V) presenting each document $D_{i}$ by a set or vector of weighted word stems.  
-
-Term frequency of a text corpus is indicated by $tf_{t,d}$ which presents the occurrence of token $t$ in a document $d$. The term frequency implies that the more times the token $t$ appears in document $d$, the more likely this token belongs to the representative topic of the document $d$. Document frequency of the text corpus is indicated by $df_{t}$ which presents the occurrence of token $t$ throughout all documents. The document frequency implies that the more versatile token $t$ is in the corpus, the less distinctive the token would be between documents.
-
-For a given document the term frequency ($tf$) and the inverse of document frequency ($idf$) are multiplied for each token $t$ and converted to weights. In order to reduce the relative importance of the increases in weights for larger values, the logarithm of $idf$ is taken. The weights formula can be written as the following Equation where $N$ is the length of documents in corpus. 
+## Class: DocTopicSim 
+This class includes data attribute references and 6-methods as follows:
+INPUT:
+    The input for the class requires:
+                    - orig_msg_content
+                    - strip_text
+                    - max_ngram_range
+                    - StopWords text file
+                    - Number of topics: ntopics
+                    - Number of terms per topic: nterms
+                    - Number of relevant documents to be assigned from each extracted topic: ndocs
 
 
-$$
-w(t,d) = tf_{t,d} \,\, log(\left |N \right |/df_{t})
-$$
+### - Data Attribute References:
+- doc_terms_lda  = []
+- doc_terms_nmf  = []
 
-Bag of Words (BoW) is a representation tool in NLP and thrives to model a document as the bags of it's words. The very early references of BoW in linguistic context was published in 1954 [[4]](#4). BoW would be created by iterating over documents and are conveying frequency of each term as training feature representation. The term frequencies are normalized by means of dividing the word count of specific term by the number of unique tokens. In this work, the $tf$ and $idf$ are produced using $tfidf-vectorizer$ from Scikit-Learn Python module. The vectorizer is then fitted by the desired input corpus (stripped text data) to produce Data Term Matrix (DTM) of the targeted corpus documents.
+- df_lda  = pd.DataFrame()
+- df_nmf  = pd.DataFrame()
+- df_ntm  = pd.DataFrame()
+    
+- dfp_lda  = pd.DataFrame()
+- dfp_nmf  = pd.DataFrame()
+- dfp_ntm  = pd.DataFrame()
+- rs_ntm   = []
+- avg_sims_ntm = []
+    
+- all_doc_targets_lda = pd.DataFrame()
+- all_doc_targets_nmf = pd.DataFrame()
+- all_doc_targets_ntm = pd.DataFrame()
+
+### - Methods
+#### 1. def \_\_init\_\_()
+The initialization method for the class where the following instanc es of classes are initiated:
+- channel name
+- original corpus
+- stipped text(cleaned corpus)
+- the targets (if available) 
+- max N-gram range
+- desired number of topics & terms & docs
+- length of corpus (number of documents in corpus) 
+
+#### 2. def lda_doc_topic_sim()
+The function produces LDA topic models using CountVectorizer which is parameterized with max_df = 0.9, min_df = 1, max_features = 2000 and various ngram_ranges. The varius ngram_ranges are generated automatically using max_ngram_range. The prametrized CountVectorizer is then fitted with stripped_text (clened_corp) and yieled the vectorized matrix of the corpus which will be fitted in LatentDirichletAllocation module. 10-topics are produced and 3-corresponding documnets for each topic are determined for measuring the document similarity index. 
+
+graph TD;
+  Topic 0 --> Doc_i
+  Topic 0 --> Doc_j
+  Topic 0 --> Doc_k
+
+
+  Topic 1 --> Doc_l
+  Topic 1 --> Doc_i
+  Topic 1 --> Doc_m
+
+  .
+  .
+  . 
+
+  Topic 9 --> Doc_j
+  Topic 9 --> Doc_f
+  Topic 9 --> Doc_p
+
+
+The similarities are measured by creating NLP documents from the topic and corresponding doc, then find the similarity between the pair.   
+Averaging over all calculted similarities, storing the results for each LDA $model_ij$ with ngram_range = (i , j).
+Plotting the barchart for average similarities of experimented models. 
+
+#### 3. def nmf_doc_topic_sim()
 
 Non-Negative Matrix Factorization (NMF) is a state of the art feature extraction algorithm which would produce meaning patterns, topics and themes if it is provided by content attributes. Statistical NMF model learns topics by decomposing the DTM. The outcome of decomposition is two low-rank factor matrices of Document Topic feature Matrix (DToM) and Topic Term feature Matrix (ToTM), see the following figure. Topic and document clusters were then extracted from their corresponding feature matrices.
-
 
 <figure>
 <center>
@@ -36,103 +90,32 @@ Non-Negative Matrix Factorization (NMF) is a state of the art feature extraction
   </center>
 </figure>
 
+The function produces NMF topic models using TF-IDF-Vectorizer. 
 
-In this research, NMF is built using NMF object from Scikit-Learn decomposition module in Python. The object is built for user specified number of topics and Non-negative Double Singular Value Decomposition (NNDSVD) initialization. The decomposing object is then fitted on corpus $DTM$ which produces the topics, their corresponding documents and terms.
+The module employs TF-IDF text information retrieval method for extracting the topics. TF-IDF was evolved in early 1970s as the outcome of two major research by [[1]](#1) and [[2]](#2). In 1991 authors of [[3]](#3), employed TF-IDF as an automatic text indexing approach for text retrieval. Since then, the approach has been widespreadly used for topic modeling, document classification, stop-word filtering and sentiment analysis. 
 
+The TF-IDF-Vectorizer is parameterized with max_df = 0.9, min_df = 1, max_features = 2000 and various ngram_ranges. The varius ngram_ranges are generated automatically using max_ngram_range. The prametrized CountVectorizer is then fitted with stripped_text (clened_corp) and yieled the vectorized matrix of the corpus which will be fitted in NMF module. setting the initialization of NMF module to "Nonnegative Double Singular Value Decomposition (NNDSVD) initialization", 10-topics are produced and 5-corresponding documnets for each topic are determined for measuring the document similarity index.
 
-Different topic models were produced using various Ngram-Ranges. The software allows the user to input the M = Max-Ngram-Range they desire. According to M = Max-Ngram-Range  
+The similarities are measured by creating NLP documents (using spaCy module) from the topic and corresponding doc, then find the similarity between the pair.   
+Averaging over all calculted similarities, storing the results for each NMF $model_ij$ with ngram_range = (i , j).
+Plotting the barchart for average similarities of experimented models. 
 
+#### 4. def ntm_doc_topic_sim()
+Two different NTM were produced using Contextualized Embeddings and generated for two versions:
+<br> (I)  CombinedTM
+<br> (II) ZeroShotTM
 
-<figure>
-<center>
-  <img src="./imgs/0.png" alt="tmm" style="width:70%">
-  </center>
-</figure>
+The CombinedTM model employed sentence transformer of "all-mpnet-base-v2". The transformer maps sentences and paragraphs to a 768 dimensional dense vector space. The defined sentence transformer is then fitted on original corpus for building the contextulized content and the stripped text (cleaned_corp) for building the bag-of words. 
+The model is trained using "Latent Dirichlet Allocation with Product of Experts (ProdLDA)" model type. 10 topics are produced and for each topic 5-top corresponding documents are identified, then the similarities between the pair of topic and document are measured by creating NLP documents and NLP similarity measure (using spaCy module). 
 
-The topic models were produced employing different Ngram-range models. to choose the best performing model, a quantitative topic model analysis is proposed and detailed in the following subsection.   
+The ZeroShotTM model employed sentence transformer of "all-mpnet-base-v2". The transformer maps sentences and paragraphs to a 768 dimensional dense vector space. The defined sentence transformer is then fitted on original corpus for building the contextulized content and the stripped text (cleaned_corp) for building the bag-of words.
 
-
-### ------------------------------------------------------------------------------------------
-## Model Selection 
-The challenge is to identify a model in which topics and documents are well coherent; so the topic model conveys a clear communication purpose and meaning to the reader [[5]](#5). Moreover, the coherence will represent text integration as a whole [[6]](#6). 
-
-Would topic modeling be considered as an unsupervised clustering algorithm, the problem of quantitative evaluation could be translated into internal clustering validation. The study herein measures Distance Weighted Cosine Similarity (DWCS) between extracted topics and their most relevant documents in N-dimensional Vector Space Model (VSM). 
-
-For the ease of visualization, let Cosine similarity property to be the inverse of distance; the shorter the distance, the higher similarity. Having this visualization concept in mind, The following Figure represents similarity of projected topics and their three relevant documents in 2-D. 
-
-
-The closer (higher cosine similarity) the topic and it's most relevant documents are, the higher similarity and coherence exists in topic models; hence a more efficient model is returned. The following Figure represent two models; which (a) Model\_I extracted more coherent topics comparing to (b) Model\_II. 
-
-<figure>
-<center>
-  <img src="./imgs/3.png" alt="dts" style="width:70%">
-  </center>
-</figure>
-
-Queries are vector constructs built upon common dictionary of tokens from a single topic or document. As the query vector is derived from common dictionary it inherits the tokens IDs from common dictionary and maps it to count/ frequency of token in the text (topic/ document). 
-
-Examples of query\_topic and query\_document from our database can be found in the following Figure. The query frequencies define the weight of vectors, where it's indices play a roll in determining VSM dimension. 
+#### 5. def save_Top_Doc()
+Getting the target model (different ngram-ranges / combinedTM/ZeroShot) and the desired mode (LDA/ NMF/ NTM) as the input, the method will save the topics and documents for further investigation.
 
 
-<figure>
-<center>
-  <img src="./imgs/4.png" alt="qex" style="width:70%">
-  </center>
-</figure>
-
-Topic models' coherence is reported while document topic similarities are averaged over all pairs of query\_topic and query\_document of the investigated model. 
-
-Each model's similarity index is then stored in the data frame for further comparison and plotting purposes. 
-
-The models with highest and lowest similarity indexes are returned.
-
-The algorithm for Model Selection of is presented in the following. 
-
-<figure>
-<center>
-  <img src="./imgs/1.png" alt="tms" style="width:70%">
-  </center>
-</figure>
-
-
-
-### ------------------------------------------------------------------------------------------
-## The Script:  _model_selection.py_
-
-DocTopicSim class is created to perform major topic modeling experiments as follows:
-
-- Topic Models for a different range of n-grams are produced,
-
-- N-Top-Related-Documents for each extracted topic is determined,
-
-- The similarity between each pair of "N-Top-Related-Document" and "Corresponding-Topic" is calculated
-
-
-- The tfidf_doc_topic_sim() method returns a descriptive DataFrame of corpus include columns = ['Model', 'Num_Topics', 'Extracted_Topics', 'Relevant_Docs', 'Strip_text_of_doc', 'Doc_Topic_Similarity'] 
-
-- The average Ndoc-topic similarity for each experimented model is plotted. 
-        
-
-INPUT:
-> The input for the class requires:
-  - orig_msg_content
-  - strip_text
-  - ngram_range
-  - StopWords text file
-  - Number of topics: ntopics
-  - Number of terms per topic: nterms
-  - Number of relevant documnets to be assigned from each extracted topic: ndocs
-
-OUTPUT:
-> Calling tfidf_doc_topic_sim() function on DocTopicSim-class-object will store a DataFrame in class.df variable which includes the following content in columns: 
-  - 'Model'
-  - Num_Topics'
-  - 'Extracted_Topics'
-  - 'Relevant_Docs'
-  - 'Strip_text_of_doc'
-  - 'Doc_Topic_Similarity'
-                                                                                
-> Calling plot_similarity_for_models() function on DocTopicSim-class-object which is trained using tfidf_doc_topic_sim() will plot the average similarity which is achieved for each trained model.  
+#### 6. def plot_DTS_RS()
+This method will scatter plot the DTS_RS for all the produced models. 
 
 
 ### ---------------------------------------------

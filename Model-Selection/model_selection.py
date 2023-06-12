@@ -69,7 +69,9 @@ DESCRIPTION:
         - lda_doc_topic_sim: produces models with different Ngram-ranges and choose best performing model using Document-Topic-Similarity
         - nmf_doc_topic_sim: produces models with different Ngram-ranges and choose best performing model using Document-Topic-Similarity
         - ntm_doc_topic_sim: produces two neural topic model, employing Contextualized Topic Modeling.
-        
+        - Description of model selection procedure can be found in our paper titled:
+            "ALT-TECH TOPIC MODELING INCORPORATING A TOPIC MODEL SELECTION STRATEGY"
+
         Each method returns a descriptive DataFrame of topic models
         The class also includes 2-minor methods:
         - save_Top_Doc: For each topic model, saves Topics and Documents for further investigation
@@ -80,11 +82,11 @@ INPUT:
     The input for the class requires:
                     - orig_msg_content
                     - strip_text
-                    - ngram_range
+                    - max_ngram_range
                     - StopWords text file
                     - Number of topics: ntopics
                     - Number of terms per topic: nterms
-                    - Number of relevant documnets to be assigned from each extracted topic: ndocs
+                    - Number of relevant documents to be assigned from each extracted topic: ndocs
                                                      
                                                                             
         
@@ -95,7 +97,7 @@ EXAMPLE:
     dts = DocTopicSim(chnlN = 'ChannelName',
                       orig_msg_content = origCorp,
                       strip_text = cleanedCorp,
-                      ngram_range = 5,
+                      max_ngram_range = 5,
                       targets = [],
                       ntopics = 10,
                       nterms = 10,
@@ -143,7 +145,7 @@ class DocTopicSim:
                  orig_msg_content: str('Should take the original meseg content from the database'),
                  strip_text: str('stripid text data from database'),
                  targets,
-                 ngram_range,
+                 max_ngram_range,
                  ntopics: str('Number of desired topics to be extracted'),
                  nterms: str('Number of terms per topic'),
                  ndocs: str('Number of documents to be extracted')) -> None:
@@ -152,7 +154,7 @@ class DocTopicSim:
         self.orig_msg_content = orig_msg_content
         self.strip_text = strip_text
         self.targets = targets
-        self.ngram_range = ngram_range
+        self.max_ngram_range = max_ngram_range
         self.ntopics = ntopics
         self.nterms = nterms
         self.ndocs = ndocs
@@ -169,9 +171,9 @@ class DocTopicSim:
         data = []
         dt1 = []
         
-        for i in range(1,self.ngram_range):
+        for i in range(1,self.max_ngram_range):
             
-            for j in range(1,self.ngram_range):
+            for j in range(1,self.max_ngram_range):
                 
                 if j >= i:
                     ngram = (i, j) 
@@ -431,8 +433,8 @@ class DocTopicSim:
         data = []
         dt1  = []
         
-        for i in range(1, self.ngram_range):
-            for j in range(1, self.ngram_range):
+        for i in range(1, self.max_ngram_range):
+            for j in range(1, self.max_ngram_range):
                 if j >= i:
                     ngram = (i, j)
                     tfidf_vect = TfidfVectorizer(max_df = 0.9,
@@ -814,7 +816,7 @@ class DocTopicSim:
         docs = list(df['Relevant_Docs'].loc[df['Model'] == targetmodel])
         
         f = open(f'{self.chnlN}_{targetmodel}_{tmodel}.txt', "w", encoding='utf-8')
-        f.write(f'This documnet contains the top {self.ntopics} topics extracted from {self.chnlN}. Each topic is followed by the {self.ndocs} top corresponding Documnets in the corpus.\n\n')
+        f.write(f'This document contains the top {self.ntopics} topics extracted from {self.chnlN}. Each topic is followed by the {self.ndocs} top corresponding Documents in the corpus.\n\n')
         
         f.write('--------------------------------------------------------------------------------- \n\n')
         
@@ -878,7 +880,7 @@ def main():
     dts = DocTopicSim(chnlN = 'ChannelName',
                       orig_msg_content = origCorp,
                       strip_text = cleanedCorp,
-                      ngram_range = 5,
+                      max_ngram_range = 5,
                       targets = [],
                       ntopics = 10,
                       nterms = 10,

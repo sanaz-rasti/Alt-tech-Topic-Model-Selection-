@@ -5,42 +5,23 @@
 The original text corpus of our project is preprocessed using the script data_preprocessing.py. 
 
 ### ---------------------------------------------
-### Reading Data
-The script includes **ChannelData** class for reading the corpus from our database. 
+### 
+The script includes data_cleaning class for reading the corpus from a .txt file and preprocess. The class description is included in the following.  
 
-
-There are two separate Tables for each channel of data in our dataset, 
-  - These tables are read and appended in one as the orig text corpus. 
-  - The object take list of target channel IDs. 
-
-ChannelData class takes 4-args of:
-  - datapath: string, pointing at '.db' file location 
-  - list_6irish_channels,
-  - target_table_1: str('Target Table_1'),
-  - target_table_2: str('Target Table_2')):
-
-Calling corpus() method returns:
-  - TextCorpus = the original message content '''
-
-
-### ---------------------------------------------
-### Data Cleaning 
-
-The data cleaning procedure includes the following steps:
-<ol>
-  <li>Lower case the text corpus.</li>
-  <li>Removing a set of symbols and expressions : $\{\# \,\, n’t\,\,  !\,\,   @\,\,  \,\, ,  “\,\,   "\,\,  ’s\,\,  ()\,\,’ \,\, ? \,\, \}$.</li>
-  <li>Removing one-digit and non-digit characters.</li>
-  <li>Removng mail server and domain of the existing email addresses.</li>
-  <li>Removing URLs.</li>
-  <li>Removing the expression 'rt' if it happens at the beginning of a line.</li>
-  <li>Duplication Removal.</li>
-  <li>Lemmatization</li>
-  <li>Stemming</li>
-</ol>
-The preprocessed data is stored as stripped text in database. 
-
-The pseudocode of preprocessing is presented herein: 
+''' ------------------- Data Cleaning ------------------- '''
+''' 
+    INPUT for the Data Cleaning class:
+        - The path to original corpus: corpus which is list of documnets and is stored as .txt file
+        - The path to list of stopwords.
+    
+    OUTPUT:
+        - after creating the object and calling the data_cleaning() method on the object, 
+        two files are created as the outcome of this function:
+            - clean_corp.txt -> is a .txt file containing list of cleaned documents
+            - orig_corp.txt  -> is a .txt file containing list of original documnets
+            
+    The aim of producing the orig_corp file is to remove the documents which are empty in the        cleaned corpus. This leads to the oorig_corp and clean_corp to be the same size 
+'''
 
 
 <figure>
@@ -52,12 +33,12 @@ The pseudocode of preprocessing is presented herein:
 
 
 
-The following text example presents an example of original message content and stripped text; the test sample is taken from Telegram channel V) Anti-Lockdown Ireland.
+The following text example presents an example of original message content and stripped text; the test sample is taken from Telegram channel Computing Forever
 
 <figure>
 <center>
   <img src="./imgs/dps.png" alt="preprocesing_example" style="width:70%">
-  <figcaption>Sample of data preprocessing from Telegram channel V) Anti-Lockdown Ireland. </figcaption>
+  <figcaption>Sample of data preprocessing from Telegram channel Computing Forever. </figcaption>
   </center>
 </figure>
 
@@ -100,6 +81,6 @@ The customized list of stop-words can be found in 'stopwords.txt' file; The cate
 ### ---------------------------------------------
 ### How to Use the data_preprocessing.py  
 
-- The script is written to read data from our database using the ChannelData class. 
-- Creating DataCleaning object and calling lemma_stem() stores clean corpus in the user-defined table. 
+- running the data_preprocessing script will ask for original corpus file and list of stopwords. 
+The script will produce two .txt files, original_corpus.txt and clean_corp.txt files.
  
